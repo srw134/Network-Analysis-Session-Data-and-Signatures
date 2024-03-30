@@ -1,0 +1,268 @@
+vars:
+  address-groups:
+    HOME_NET: '[172.31.140.0/24]'
+    EXTERNAL_NET: '!$HOME_NET'
+    HTTP_SERVERS: $HOME_NET
+    SMTP_SERVERS: $HOME_NET
+    SQL_SERVERS: $HOME_NET
+    DNS_SERVERS: $HOME_NET
+    TELNET_SERVERS: $HOME_NET
+    AIM_SERVERS: $EXTERNAL_NET
+    DC_SERVERS: $HOME_NET
+    DNP3_SERVER: $HOME_NET
+    DNP3_CLIENT: $HOME_NET
+    MODBUS_CLIENT: $HOME_NET
+    MODBUS_SERVER: $HOME_NET
+    ENIP_CLIENT: $HOME_NET
+    ENIP_SERVER: $HOME_NET
+  port-groups:
+    HTTP_PORTS: '80'
+    SHELLCODE_PORTS: '!80'
+    ORACLE_PORTS: 1521
+    SSH_PORTS: 22
+    DNP3_PORTS: 20000
+    MODBUS_PORTS: 502
+    FILE_DATA_PORTS: '[$HTTP_PORTS,110,143]'
+    FTP_PORTS: 21
+    GENEVE_PORTS: 6081
+    VXLAN_PORTS: 4789
+    TEREDO_PORTS: 3544
+
+default-log-dir: /var/log/suricata/
+
+stats:
+  enabled: true
+  interval: 8
+
+outputs:
+  - fast:
+      enabled: yes
+      filename: fast.log
+      append: yes
+      filetype: regular
+  - eve-log:
+      enabled: yes
+      filetype: unix_stream
+      filename: eve.json
+      community-id: true
+      community-id-seed: 0
+      xff:
+        enabled: yes
+        mode: extra-data
+        deployment: reverse
+        header: X-Forwarded-For
+      types:
+        - alert:
+            tagged-packets: yes
+        - anomaly:
+            enabled: yes
+        - http:
+            extended: yes
+        - dns:
+            version: 2
+            query: yes
+            answer: yes
+        - tls:
+            extended: yes
+            session-resumption: yes
+            custom:
+              - subject
+              - issuer
+              - session_resumed
+        - files
+        - smtp
+        - ssh
+        - flow
+        - rdp
+        - nfs
+        - smb
+        - tftp
+        - ikev2
+        - dcerpc
+        - krb5
+        - snmp
+        - sip
+        - dhcp
+        - rfb
+        - mqtt
+        - stats:
+            totals: yes
+            threads: no
+            deltas: no
+  - http-log:
+      enabled: yes
+      filename: http.log
+      append: yes
+  - tls-log:
+      enabled: yes
+      filename: tls.log
+      append: yes
+  - dns-log:
+      enabled: yes
+      filename: dns.log
+      append: yes
+
+af-packet:
+  - interface: ens5
+    cluster-id: 99
+    cluster-type: cluster_flow
+    defrag: yes
+    use-mmap: yes
+    threads: auto
+    copy-mode: ips
+    copy-iface: ens5
+
+app-layer:
+  protocols:
+    rfb:
+      enabled: yes
+    krb5:
+      enabled: yes
+    snmp:
+      enabled: yes
+    ikev2:
+      enabled: yes
+    tls:
+      enabled: yes
+      detection-ports:
+        dp: 443
+      ja3-fingerprints: yes
+      custom-signature:
+        enabled: yes
+    dcerpc:
+      enabled: yes
+    ftp:
+      enabled: yes
+    ssh:
+      enabled: yes
+    http2:
+      enabled: yes
+      max-streams: 256
+      max-table-size: 65536
+    smtp:
+      enabled: yes
+      raw-extraction: yes
+      mime:
+        decode-mime: yes
+        decode-base64: yes
+        decode-quoted-printable: yes
+        header-value-depth: 4096
+        extract-urls: yes
+        body-md5: yes
+    imap:
+      enabled: detection-only
+    smb:
+      enabled: yes
+      detection-ports:
+        dp: 139, 445
+    nfs:
+      enabled: yes
+    tftp:
+      enabled: yes
+    dns:
+      tcp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+      udp:
+        enabled: yes
+        detection-ports:
+          dp: 53
+    http:
+      enabled: yes
+      libhtp:
+        default-config:
+          personality: IDS
+          request-body-limit: 0
+          response-body-limit: 0
+          request-body-minimal-inspect-size: 32768
+          request-body-inspect-window: 8192
+          response-body-minimal-inspect-size: 32768
+          response-body-inspect-window: 8192
+          response-body-decompress-layer-limit: 2
+          http-body-inline: auto
+          swf-decompression:
+            enabled: yes
+            type: both
+            compress-depth: 8192
+            decompress-depth: 8192
+          double-decode-path: yes
+          double-decode-query: yes
+    modbus:
+      enabled: yes
+      detection-ports:
+        dp: 502
+    dnp3:
+      enabled: yes
+      detection-ports:
+        dp: 20000
+    enip:
+      enabled: yes
+      detection-ports:
+        dp: 44818
+        sp: 44818
+    ntp:
+      enabled: yes
+    dhcp:
+      enabled: yes
+
+host-os-policy:
+  windows: [0.0.0.0/0]
+
+defrag:
+  memcap: 64mb
+
+flow:
+  memcap: 256mb
+
+stream:
+  memcap: 512mb
+  reassembly:
+    memcap: 1gb
+    depth: 0
+
+host:
+  hash-size: 8192
+  prealloc: 8192
+  memcap: 64mb
+
+decoder:
+  teredo:
+    enabled: yes
+    ports: $TEREDO_PORTS
+  vxlan:
+    enabled: yes
+    ports: $VXLAN_PORTS
+  geneve:
+    enabled: yes
+    ports: $GENEVE_PORTS
+
+detect:
+  profile: high
+  custom-values:
+    toclient-groups: 50
+    toserver-groups: 100
+  sgh-mpm-context: auto
+  inspection-recursion-limit: 8192
+  prefilter:
+    default: mpm
+
+mpm-algo: hs
+spm-algo: hs
+
+threading:
+  set-cpu-affinity: no
+  detect-thread-ratio: 1.5
+
+default-rule-path: /var/lib/suricata/rules/
+rule-files:
+  - suricata.rules
+  - app-layer.rules
+  - dns.rules
+  - files.rules
+  - http-events.rules
+  - smtp-events.rules
+  - tls-events.rules
+
+classification-file: /etc/suricata/classification.config
+reference-config-file: /etc/suricata/reference.config
