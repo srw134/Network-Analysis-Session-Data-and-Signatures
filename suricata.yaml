@@ -14,7 +14,7 @@ vars:
   address-groups:
     #HOME_NET: "[192.168.0.0/16,10.0.0.0/8,172.16.0.0/12]"
     #HOME_NET: "[192.168.0.0/16]"
-    HOME_NET: "[10.10.10.0/24,10.10.20.0/24]"
+    HOME_NET: "[172.31.140.0/24]"
     #HOME_NET: "[172.16.0.0/12]"
     #HOME_NET: "any"
 
@@ -580,7 +580,7 @@ logging:
 
 # Linux high speed capture support
 af-packet:
-  - interface: ens37
+  - interface: ens5
     # Number of receive threads. "auto" uses the number of cores
     #threads: auto
     # Default clusterid. AF_PACKET will load balance packets based on flow.
