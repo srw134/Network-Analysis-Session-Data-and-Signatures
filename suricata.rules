@@ -36,11 +36,6 @@ alert tcp any any -> any any (msg:"Possible Nmap TCP XMAS Scan"; flags:FPU; thre
 #FIN
 alert tcp any any -> any any (msg:"Possible Nmap TCP FIN Scan"; flags:F; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:2000013; rev:1;)
 
-
-#Apple Fingerprint
-alert udp any any -> 224.0.0.251 5353 (msg:"Possible Apple Device mDNS Query"; content:"|00 01 00 00|"; sid:2000020;)
-
-
 #Cisco Fingerprint
 alert tcp any any -> any any (msg:"Likely Cisco Device TCP Window Size"; flow:to_server; tcp.window:4128; sid:1000010;)
 
