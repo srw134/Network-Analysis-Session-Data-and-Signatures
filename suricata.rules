@@ -1,18 +1,18 @@
 #Recon
 #SYN
-alert tcp any any -> any any (msg:"Possible Nmap TCP SYN Scan"; flags:S; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:2000010; rev:1;)
+alert tcp any any -> any any (msg:"Possible Nmap TCP SYN Scan"; flags:S; threshold: type both, track by_src, count 20, seconds 60; classtype:attempted-recon; sid:2000010; rev:1;)
 
 #SYN - Linux fingerprint
 alert tcp any any -> any any (msg:"Potential Linux OS performing Nmap TCP SYN Scan"; flags:S; ttl:64; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:3000010; rev:1;)
 
 #NULL
-alert tcp any any -> any any (msg:"Possible Nmap TCP NULL Scan"; flags:0; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:2000011; rev:1;)
+alert tcp any any -> any any (msg:"Possible Nmap TCP NULL Scan"; flags:0; threshold: type both, track by_src, count 20, seconds 60; classtype:attempted-recon; sid:2000011; rev:1;)
 
 #XMAS
-alert tcp any any -> any any (msg:"Possible Nmap TCP XMAS Scan"; flags:FPU; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:2000012; rev:1;)
+alert tcp any any -> any any (msg:"Possible Nmap TCP XMAS Scan"; flags:FPU; threshold: type both, track by_src, count 20, seconds 60; classtype:attempted-recon; sid:2000012; rev:1;)
 
 #FIN
-alert tcp any any -> any any (msg:"Possible Nmap TCP FIN Scan"; flags:F; threshold: type both, track by_src, count 10, seconds 60; classtype:attempted-recon; sid:2000013; rev:1;)
+alert tcp any any -> any any (msg:"Possible Nmap TCP FIN Scan"; flags:F; threshold: type both, track by_src, count 20, seconds 60; classtype:attempted-recon; sid:2000013; rev:1;)
 
 #Cisco Fingerprint
 alert tcp any any -> any any (msg:"Likely Cisco Device TCP Window Size"; flow:to_server; tcp.window:4128; sid:1000010;)
