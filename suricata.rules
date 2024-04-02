@@ -15,7 +15,7 @@ alert tcp any any -> any any (msg:"Possible Nmap TCP XMAS Scan"; flags:FPU; thre
 alert tcp any any -> any any (msg:"Possible Nmap TCP FIN Scan"; flags:F; threshold: type both, track by_src, count 20, seconds 60; classtype:attempted-recon; sid:2000013; rev:1;)
 
 #Cisco Fingerprint
-alert tcp any any -> any any (msg:"Likely Cisco Device TCP Window Size"; flow:to_server; tcp.window:4128; sid:1000010;)
+alert tcp any any -> any any (msg:"Likely Cisco Device TCP Window Size"; flow:to_server; tcp.window:4128; classtype:attempted-recon; sid:1000010;)
 
 
 #DoS
