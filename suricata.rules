@@ -39,7 +39,7 @@ alert dns any any -> any any (msg:"Possible DNS Data Exfiltration - Long Domain 
 
 alert http any any -> any any (msg:"Large HTTP POST - Potential Data Exfiltration"; flow:established,to_server; content:"POST"; http_method; content:"Content-Length"; http_header; pcre:"/Content-Length:\s*\d{5,}/i"; classtype:misc-attack; sid:2000006; rev:1;)
 
-alert ip any any -> [172.16.10.1,192.168.1.100] any (msg:"Traffic to Known Malicious IP"; classtype:trojan-activity; sid:2000007; rev:1;)
+alert ip any any -> [198.51.100.2] any (msg:"Traffic to Known Malicious IP"; classtype:trojan-activity; sid:2000007; rev:1;)
 
 alert http any any -> any ![80,443] (msg:"HTTP Traffic on Non-Standard Port"; flow:established,to_server; classtype:trojan-activity; sid:2000008; rev:1;)
 
